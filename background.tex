@@ -1,5 +1,5 @@
 \chapter{Background}\label{Background}
-This chapter aims to provide a comprehensive overview of the key concepts, challenges, and advancements in privacy-preserving computation, specifically \ac{SMPC}, and \ac{RL}.
+This chapter aims to provide a comprehensive overview of the key concepts, challenges, and advancements in privacy-preserving computation, specifically \ac{SMPC}, and record linkage.
 \section{Secure Multi-Party Computation}
 
 \subsection{Threat Models}
@@ -7,6 +7,31 @@ This chapter aims to provide a comprehensive overview of the key concepts, chall
 \subsection{Arithmetic Sharing}
 \subsection{Boolean Sharing}
 \section{Record Linkage}
-\subsection{Concept}
-\subsection{Algorithms}
-\subsection{Privacy}
+\subsection{Concept and Application}
+Record linkage is the process of matching data points (records) related to the same entity, i.e. human, but originating from different datasets.
+If a commonly shared unique identifier exists, this process is trivial. % TODO find example of this
+For instance, the \ac{SSN} in the United States of America, in theory, serves this purpose.
+In practice, even this is not perfect due to erroneous data.
+More importantly, there are many instances where such a unique identifier is not readily available.
+In these instances, the matching must be done on features of the entity that are found in both datasets. % TODO find multiple areas where record linkage is employed
+The term record linkage in its broadest definition may be used to refer to any such process of linking datasets, such as %TODO find example (Arjun mentioned something?)
+In this work, the term record linkage pertains to the linking of datasets using \ac{IDAT}.
+These include information such as name, date of birth and place of residence of a patient.
+In medical research, record linkage is commonly employed to match patient data from various healthcare institutions, creating a dataset that combines information from different sources.
+Individually, each \ac{IDAT} point is insufficient to provide an unambiguous match, which is why they are often referred to as quasi-identifiers. % TODO where?
+However, when combining enough quasi-identifiers, such a match can be achieved.
+Issues in record linkage based on \ac{IDAT} arise when the data is either non-unique or inaccurate, which leads us to error types and their sources.
+
+\Ac{IDAT} inaccuracies arise through various means, primarily during manual data entry.
+Human input, typically via keyboard, introduces errors stemming from multiple sources.
+Spelling mistakes may result from transcribing orally received information or copying text-based information.
+Oral communication may introduce discrepancies due to similar-sounding words or varied spellings of the same name.
+Copying text can lead to confusion between visually similar letters (e.g., I and l).
+Typographical errors, induced by slips during typing, contribute to insertions, substitutions, transpositions, or deletions of letters.
+Lastly, misplacement of individual attributes, such as swapping a patient's first name and surname, represents another source of error.
+
+% TODO add section discussing research of spelling mistakes etc
+
+\subsection{Classic Algorithms}
+To tackle the complexities of
+\subsection{Privacy-Preserving Algorithms}
