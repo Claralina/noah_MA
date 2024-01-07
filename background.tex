@@ -2,7 +2,7 @@
 This chapter aims to provide a comprehensive overview of the key concepts, challenges, and advancements in privacy-preserving computation, specifically \ac{SMPC}, and record linkage.
 \section{Secure Multi-Party Computation}
 
-\subsection{Threat Models}
+\subsection{Adversary Models}
 \subsection{Yao's Garbled Circuits}
 \subsection{Arithmetic Sharing}
 \subsection{Boolean Sharing}
@@ -12,6 +12,7 @@ Record linkage is the process of matching data points (records) related to the s
 If a commonly shared unique identifier exists, this process is trivial. % TODO find example of this
 For instance, the \ac{SSN} in the United States of America, in theory, serves this purpose.
 In practice, even this is not perfect due to erroneous data.
+Unique identifiers may have spelling mistakes or typos, so that a match is no longer possible.
 More importantly, there are many instances where such a unique identifier is not readily available.
 In these instances, the matching must be done on features of the entity that are found in both datasets. % TODO find multiple areas where record linkage is employed
 The term record linkage in its broadest definition may be used to refer to any such process of linking datasets, such as %TODO find example (Arjun mentioned something?)
@@ -32,6 +33,111 @@ Lastly, misplacement of individual attributes, such as swapping a patient's firs
 
 % TODO add section discussing research of spelling mistakes etc
 
-\subsection{Classic Algorithms}
-To tackle the complexities of
-\subsection{Privacy-Preserving Algorithms}
+\subsection{Approaches}
+To tackle the complexities of record linkage, three main classes of record linkage have emerged:
+Rule-based (deterministic) record linkage, probabilistic record linkage and more advanced forms using machine learning classifiers.
+
+Deterministic record linkage describes the procedures where a binary outcome is obtained.
+Records are either classified as matching or not matching.
+Because this approach requires high data quality due to its inability to deal with errors, it is not reported often.
+One example where such an approach has been used appears to be Surveillance, Epidemiology and End Results-Medicare linked dataset created by the US National Cancer Institute as reported by Dusetzina et al. \cite{dusetzinaOverviewRecordLinkage2014}, though the primary sources reporting this are not available anymore.
+Here, records were first matched on the \ac{SSN} and combinations of first and last name, month of birth and sex.
+Then, a second round of linkage is carried out for records without a \ac{SSN} or which were not matched in the previous round.
+In this round, first name, last name, month of birth and sex are matched, in addition to either a part of the \ac{SSN} or a combination of day of birth, year of birth, middle initial and date of death.
+It is noteworthy that despite being an example of deterministic record linkage, the first and last name allow for fuzzy matches to account for nicknames.
+This is an example of data preprocessing, which will be described in more detail later.
+
+Probabilistic record linkage is a more lenient approach in that rather than matching records based on hard rules, a match probability or record similarity metric is computed for pairs of records.
+This metric is subsequently thresholded to categorise record pairs into matches and non-matches.
+Probabilistic record linkage is generally better for dealing with low quality data with many errors.
+It has the benefit of being flexible in weighing up specificity against sensitivity.
+Namely, a researcher requiring very high sensitivity may set a low threshold to catch as many true matches as possible, at the detriment of increasing false positive matches.
+In contrast, a researcher interested only in the highest quality matches may set a high threshold, thus filtering out false positives at the cost of sensitivity.
+There are a number of algorithms employing probabilistic record linkage.
+
+Perhaps the most classical example of a probabilistic record linkage model is the Fellegi-Sunter model \cite{fellegiTheoryRecordLinkage1969a}.
+To compute the probability of a  match between a given pair of records, Fellegi and Sunter start with a prior probability that two randomly drawn records match.
+Each record attribute is compared individually and is given a partial match weight based on how similar the attribute is between the two records.
+The sum of all match weights is used together with the prior probability to compute a specific probability that the two records match.
+Each partial match weight is estimated via $m$ and $u$ probabilities.
+The relation between an attribute pair may be match/no match or a similarity metric, depending on the specific implementation of the Fellegi-Sunter model.
+$m$ is the probability of observing the attribute pair relation on hand given the two records are a match.
+Likewise, $u$ is the probability of the relation given the two records are not a match.
+$m$ and $u$ can be computed in various ways, either from the given datasets themselves or from prior knowledge about the populations the records are drawn from.
+When implemented well, $m$ and $u$ will incorporate information about error rates of an attribute as well as individual frequencies of the given attributes.
+Since Fellegi and Sunter only describe a general mathematical framework, the actual result depends on the specific implementation and probability computation, of which Fellegi and Sunter give a few suggestions.
+\subsection{Blocking}
+In the most naive implementation of record linkage, each record in set $A$ has to be compared to each record in set $B$, giving a quadratic complexity of $\vert A\vert \times \vert B \vert$ comparisons.
+To reduce this number, \textit{blocking} is employed.
+Here, records are grouped into blocks by differing criteria, so only those records within each block have to be compared.
+In its most basic form, blocks may simply be defined based on a specific attribute such as the city or year of birth.
+This technique is extremely simple to implement, but it has a significant downside
+-- if there is an error such as a misspelling or typo in a record's attribute selected for blocking, it becomes impossible to match this record.
+Therefore, it is only appropriate if the researcher can be certain a specific attribute is relatively error-free across all records.
+Therefore, more advanced blocking techniques have been developed.
+Blocks may be defined by clustering the records.
+
+Clustering is the process of dividing data points into groups such that within-variance of each group is minimised, while between-variance between groups is maximised.
+This variance is computed based on a distance or similarity function.
+Many such functions exist -- distance functions include the Pearson correlation distance, the standardised Euclidean distance and the Minkowski distance;
+for similarity functions, these may be the Jaccard similarity or the Hamming similarity.
+Clustering algorithms can be divided into nine categories according to Xu and Tian \cite{xuComprehensiveSurveyClustering2015}.
+These categories describe what the algorithm is based on.
+Partition-based algorithms
+One such algorithm is K-means clustering, where $k$ cluster centers are defined.
+Data points are assigned to the cluster with the nearest center, which is then updated to include the data point \cite{lloydLeastSquaresQuantization1982}.
+Hierarchy-based algorithms try to establish a hierarchy of clusters.
+This is either achieved bottom-up or top-down.
+In bottom-up algorithms such as Clink \cite{defaysEfficientAlgorithmComplete1977}, the algorithm starts with each data point having its own cluster.
+Iteratively, the two closest clusters are merged until just a single one remains.
+In contrast, top-down algorithms such as DIANA \cite{kaufmanDivisiveAnalysisProgram2009} start with a single cluster and iteratively split each cluster into two to create the hierarchy.
+\ac{FCM} clustering \cite{dunnFuzzyRelativeISODATA1973} is an example of a fuzzy theory-based algorithm.
+These algorithms use fuzzy cluster membership, so that a single data point may belong to multiple clusters and cluster membership is not binary but a continuous number between zero and one.
+\Ac{FCM} clustering otherwise works similarly to k-means clustering.
+The other clustering categories are distribution-based, density-based, graph theory-based, grid-based, fractal theory-based and model-based clustering \cite{xuComprehensiveSurveyClustering2015}.
+When using a clustering technique as a precursor to record linkage, it is important to choose one that does not have a higher complexity than the record linkage itself.
+The aforementioned hierarchical clustering algorithm Clink, for example, has a time complexity of $O(n^2)$ \cite{defaysEfficientAlgorithmComplete1977}, which is not an improvement in comparison to naive record linkage.
+On the other hand, clustering methods with a time complexity of $O(n)$, such as the hierarchical clustering algorithm BIRCH \cite{zhangBIRCHEfficientData1996}, may greatly increase the runtime of record linkage when used for blocking.
+
+% TODO introduce section about data preprocessing
+% TODO describe blocking
+\subsection{Privacy-Preserving Techniques}
+Privacy regulations such as the European Union's regulation on the protection of personal data % TODO cite
+ or Health Insurance Portability and Accountability Act of the USA restrict disclosing sensitive personal data. % TODO cite
+These restrictions necessitate algorithms for record linkage that do not require the exchange of \ac{IDAT}.
+To accommodate these requirements, \ac{PPRL} algorithms have been developed.
+Generally, these algorithms encode \ac{IDAT} so that the encoded versions can still be compared but do not reveal information about the original data.
+This may be done via a hashing function such as MD5. %TODO cite
+However, with hashes, only a binary match can be obtained, which can only identify string equivalence, not similarity.
+The reason for this is that similarity measures between two differing hashes do not correlate with the similarity of the strings from which the hashes were derived.
+Therefore, to the author's knowledge there is no \ac{PPRL} algorithm employing hashes only.
+Hashing-based algorithms can also fall prey to \textit{dictionary attacks} - given a hash, an adversary can compute hashes for many different words until they find the word that produces a given hash.
+To remedy this,a \ac{HMAC} may be used.
+Here, a secret key is exchanged between the parties involved in \ac{PPRL}, and two padding strings $ipad$ and $opad$ of length $B$ are defined.
+When a party needs to compute a hash, the following procedure takes place:
+
+The secret key is padded with zeros to the length $B$.
+Two \ac{XOR} computations are carried out -- between the padded secret key and either $ipad$ or $opad$.
+Then, the string to be hashed is appended to the $ipad$ \ac{XOR} result, and the hashing function is applied to the resulting string.
+The $opad$ \ac{XOR} result is appended to the hash, and the hashing function is applied to this string to obtain the final result.
+
+The final hash cannot be replicated without knowing the secret key, rendering dictionary attacks void.
+This technique was originally developed to authenticate messages, where the hash was computed from the original message
+\cite{krawczykHMACKeyedHashingMessage1997}.
+
+An extension of the concept of hashes is using Bloom filters. % TODO include figure showing Bloom filters
+Bloom filters were originally invented to easily test whether an item is a member of a set.
+A Bloom filter consists of a zero-initialised bit array of length $n$.
+For each item in the set, $l$ hashes are computed using hash functions that have an output range of $n$ values.
+For each computed hash $h$, the $h$th bit in the bit array is set to 1.
+To test an item for membership of the set, one can simply compute the $l$ hashes of the item and see if the Bloom filter was set to 1 in all $l$ positions given by the hashes.
+This method has a false negative error rate of 0\%, though its false positive error rate is larger.
+Since Bloom filter-based \ac{PPRL} algorithms also rely on hashes, \ac{HMAC}s are required to prevent dictionary attacks.
+Additionally, Bloom filters are weak to \textit{frequency attacks}. % TODO elaborate and explain frequency attacks
+
+One \ac{PPRL} algorithm employing Bloom filters was proposed by Schnell et al. % TODO cite and explain in detail
+%In the context of \ac{PPRL}, one or multiple \ac{IDAT} attributes are used to create a Bloom filter.
+%For example, all $q$-grams, i.e. substrings of length $q$, contained in each attribute are hashed for the creation of the Bloom filter.
+%Bloom filters derived from different records can subsequently be compared.
+%Because the basis of Bloom filters are still hashes, a Bloom filter does not give information about the
+
