@@ -1,3 +1,19 @@
+@article{chenPerfectlySecureEfficient2018,
+  title = {Perfectly {{Secure}} and {{Efficient Two-Party Electronic-Health-Record Linkage}}},
+  author = {Chen, Feng and Jiang, Xiaoqian and Wang, Shuang and Schilling, Lisa M. and Meeker, Daniella and Ong, Toan and Matheny, Michael E. and Doctor, Jason N. and {Ohno-Machado}, Lucila and Vaidya, Jaideep},
+  year = {2018},
+  month = mar,
+  journal = {IEEE Internet Computing},
+  volume = {22},
+  number = {2},
+  pages = {32--41},
+  issn = {1941-0131},
+  doi = {10.1109/MIC.2018.112102542},
+  urldate = {2024-01-07},
+  abstract = {Patient health data are often found spread across various sources. However, precision medicine and personalized care require access to the complete medical records. The first step toward this is to enable the linkage of health records spread across different sites. Existing record linkage solutions assume that data are centralized with no privacy or security concerns restricting sharing. However, that is often untrue. Therefore, we have designed and implemented a portable method for privacy-preserving record linkage based on garbled circuits to accurately and securely match records. We have also developed a novel approximate-matching mechanism that significantly improves efficiency.},
+  file = {/home/noah/Zotero/storage/ALXCL8CD/Chen et al. - 2018 - Perfectly Secure and Efficient Two-Party Electroni.pdf;/home/noah/Zotero/storage/NI8X8S62/8259429.html}
+}
+
 @article{defaysEfficientAlgorithmComplete1977,
   title = {An Efficient Algorithm for a Complete Link Method},
   author = {Defays, D.},
@@ -12,6 +28,19 @@
   urldate = {2024-01-06},
   abstract = {An improved algorithm for a complete linkage clustering is discussed. The algorithm is based, like the algorithm for the single link cluster method (Slink) presented by Sibson (1973), on a compact representation of a dendrogram: the pointer representation. This approach offers economy in computation. The algorithm is easily programmable.},
   file = {/home/noah/Zotero/storage/HIXEULRS/Defays - 1977 - An efficient algorithm for a complete link method.pdf;/home/noah/Zotero/storage/P3PCCN4I/393966.html}
+}
+
+@inproceedings{demmlerABYFrameworkEfficient2015,
+  title = {{{ABY}} {\textendash} {{A Framework}} for {{Efficient Mixed-Protocol Secure Two-Party Computation}}},
+  booktitle = {{{NDSS Symposium}} 2015},
+  author = {Demmler, Daniel and Schneider, Thomas and Zohner, Michael},
+  year = {2015},
+  month = feb,
+  urldate = {2022-12-04},
+  abstract = {Secure computation enables multiple mutually distrusting parties to jointly evaluate functions on their private inputs without revealing anything but the result. Generic secure computation protocols in the semi-honest model have been studied extensively and several best practices have evolved. In this work, we design and implement a mixed-protocol framework, called ABY, that efficiently combines secure computation schemes based on Arithmetic sharing, Boolean sharing, and Yao's garbled circuits and that makes available best practice solutions in secure two-party computation. Our framework allows to pre-compute almost all cryptographic operations and provides novel highly efficient conversions between secure computation schemes based on pre-computed oblivious transfer extensions. ABY supports several standard operations and we perform benchmarks on a local network and in a public intercontinental cloud. From our benchmarks we deduce new insights on the efficient design of secure computation protocols, most prominently that oblivious transfer-based multiplications are much more efficient than using homomorphic encryption. We use our framework to construct mixed-protocols for three example applications, private set intersection, biometric matching, and modular exponentiation, and show that they are much more efficient than using a single protocol.},
+  langid = {american},
+  keywords = {\_tablet},
+  file = {/home/noah/Zotero/storage/RF2WU69E/Demmler_et_al_2015_ABY_–_A_Framework_for_Efficient_Mixed-Protocol_Secure_Two-Party_Computation.pdf;/home/noah/Zotero/storage/QMXE6AZ6/aby-framework-efficient-mixed-protocol-secure-two-party-computation.html}
 }
 
 @article{dunnFuzzyRelativeISODATA1973,
@@ -62,6 +91,7 @@
 @inbook{kaufmanDivisiveAnalysisProgram2009,
   title = {6. {{Divisive Analysis}} ({{Program DIANA}})},
   booktitle = {Finding {{Groups}} in {{Data}}: {{An Introduction}} to {{Cluster Analysis}}},
+  author = {Kaufman, Leonard and Rousseeuw, Peter},
   year = {2009},
   month = sep,
   pages = {253--279},
@@ -102,6 +132,52 @@
   file = {/home/noah/Zotero/storage/6427DMFG/Krawczyk et al. - 1997 - HMAC Keyed-Hashing for Message Authentication.pdf}
 }
 
+@article{lablansRESTfulInterfacePseudonymization2015,
+  title = {A {{RESTful}} Interface to Pseudonymization Services in Modern Web Applications},
+  author = {Lablans, Martin and Borg, Andreas and {\"U}ckert, Frank},
+  year = {2015},
+  month = feb,
+  journal = {BMC Medical Informatics and Decision Making},
+  volume = {15},
+  number = {1},
+  pages = {2},
+  issn = {1472-6947},
+  doi = {10.1186/s12911-014-0123-5},
+  abstract = {Medical research networks rely on record linkage and pseudonymization to determine which records from different sources relate to the same patient. To establish informational separation of powers, the required identifying data are redirected to a trusted third party that has, in turn, no access to medical data. This pseudonymization service receives identifying data, compares them with a list of already reported patient records and replies with a (new or existing) pseudonym. We found existing solutions to be technically outdated, complex to implement or not suitable for internet-based research infrastructures. In this article, we propose a new RESTful pseudonymization interface tailored for use in web applications accessed by modern web browsers.}
+}
+
+@article{laudPrivacypreservingRecordLinkage2018,
+  title = {Privacy-Preserving Record Linkage in Large Databases Using Secure Multiparty Computation},
+  author = {Laud, Peeter and Pankova, Alisa},
+  year = {2018},
+  month = oct,
+  journal = {BMC Medical Genomics},
+  volume = {11},
+  number = {4},
+  pages = {33--46},
+  publisher = {{BioMed Central}},
+  issn = {1755-8794},
+  doi = {10.1186/s12920-018-0400-8},
+  urldate = {2024-01-07},
+  abstract = {Practical applications for data analysis may require combining multiple databases belonging to different owners, such as health centers. The analysis should be performed without violating privacy of neither the centers themselves, nor the patients whose records these centers store. To avoid biased analysis results, it may be important to remove duplicate records among the centers, so that each patient's data would be taken into account only once. This task is very closely related to privacy-preserving record linkage. This paper presents a solution to privacy-preserving deduplication among records of several databases using secure multiparty computation. It is build upon one of the fastest practical secure multiparty computation platforms, called Sharemind. The tests on ca 10 million records of simulated databases with 1000 health centers of 10000 records each show that the computation is feasible in practice. The expected running time of the experiment is ca. 30 min for computing servers connected over 100 Mbit/s WAN, the expected error of the results is 2-40, and no errors have been detected for the particular test set that we used for our benchmarks. The solution is ready for practical use. It has well-defined security properties, implied by the properties of Sharemind platform. The solution assumes that exact matching of records is required, and a possible future research would be extending it to approximate matching.},
+  copyright = {2018 The Author(s)},
+  langid = {english},
+  file = {/home/noah/Zotero/storage/IKYET2MD/Laud and Pankova - 2018 - Privacy-preserving record linkage in large databas.pdf}
+}
+
+@inproceedings{lazrigPrivacyPreservingProbabilistic2018,
+  title = {Privacy {{Preserving Probabilistic Record Linkage Without Trusted Third Party}}},
+  booktitle = {2018 16th {{Annual Conference}} on {{Privacy}}, {{Security}} and {{Trust}} ({{PST}})},
+  author = {Lazrig, Ibrahim and Ong, Toan C. and Ray, Indrajit and Ray, Indrakshi and Jiang, Xiaoqian and Vaidya, Jaideep},
+  year = {2018},
+  month = aug,
+  pages = {1--10},
+  doi = {10.1109/PST.2018.8514192},
+  urldate = {2024-01-07},
+  abstract = {For the purpose of research, organizations often need to share and link data belonging to a single individual while protecting her privacy. This problem, referred to as privacy preserving record linkage (PPRL), has been investigated by researchers. Most PPRL works focus on deterministic linkages where the identifying attributes of two records must be equal in order to declare them to belong to the same individual. Moreover, most of these methods require the active participation of a trusted third party (TTP). If this TTP is compromised, it makes the data from all participating parties vulnerable to information leakage. The proposed work improves upon the existing methods in two ways. First, we propose a protocol which does not require two records to have an exact match on identifying attributes in order to be declared as belonging to the same individual. Second, we investigate probabilistic PPRL in the two-party setting without resorting to any TTP. We use Bloom filters for probabilistic matching and Yao's garbled circuit to perform the computation needed for the matching on encrypted data. To alleviate the computation and communication overhead of Yao's protocol, we leverage data blocking methods and optimize the computation. We provide a security proof of our method and experimentally evaluate the performance gained on large benchmark datasets.},
+  file = {/home/noah/Zotero/storage/6YPVCKPK/8514192.html}
+}
+
 @article{lloydLeastSquaresQuantization1982,
   title = {Least Squares Quantization in {{PCM}}},
   author = {Lloyd, S.},
@@ -135,6 +211,24 @@
   langid = {engl},
   keywords = {cancer registry,data quality,encrypted data,evaluation,record linkage},
   file = {/home/noah/Zotero/storage/FGJSQSSA/Schmidtmann et al. - 2016 - Quality of record linkage in a highly automated ca.pdf;/home/noah/Zotero/storage/9BPDKQRJ/mibe000164.html}
+}
+
+@article{stammlerMainzellisteSecureEpiLinkerMainSEL2022,
+  title = {Mainzelliste {{SecureEpiLinker}} ({{MainSEL}}): Privacy-Preserving Record Linkage Using Secure Multi-Party Computation},
+  shorttitle = {Mainzelliste {{SecureEpiLinker}} ({{MainSEL}})},
+  author = {Stammler, Sebastian and Kussel, Tobias and Schoppmann, Phillipp and Stampe, Florian and Tremper, Galina and Katzenbeisser, Stefan and Hamacher, Kay and Lablans, Martin},
+  year = {2022},
+  month = mar,
+  journal = {Bioinformatics},
+  volume = {38},
+  number = {6},
+  pages = {1657--1668},
+  issn = {1367-4803},
+  doi = {10.1093/bioinformatics/btaa764},
+  urldate = {2023-01-04},
+  abstract = {Record Linkage has versatile applications in real-world data analysis contexts, where several datasets need to be linked on the record level in the absence of any exact identifier connecting related records. An example are medical databases of patients, spread across institutions, that have to be linked on personally identifiable entries like name, date of birth or ZIP code. At the same time, privacy laws may prohibit the exchange of this personally identifiable information (PII) across institutional boundaries, ruling out the outsourcing of the record linkage task to a trusted third party. We propose to employ privacy-preserving record linkage (PPRL) techniques that prevent, to various degrees, the leakage of PII while still allowing for the linkage of related records.We develop a framework for fault-tolerant PPRL using secure multi-party computation with the medical record keeping software Mainzelliste as the data source. Our solution does not rely on any trusted third party and all PII is guaranteed to not leak under common cryptographic security assumptions. Benchmarks show the feasibility of our approach in realistic networking settings: linkage of a patient record against a database of 10~000 records can be done in 48\,s over a heavily delayed (100\,ms) network connection, or 3.9\,s with a low-latency connection.The source code of the sMPC node is freely available on Github at https://github.com/medicalinformatics/SecureEpilinker subject to the AGPLv3 license. The source code of the modified Mainzelliste is available at https://github.com/medicalinformatics/MainzellisteSEL.Supplementary data are available at Bioinformatics online.},
+  keywords = {\_tablet},
+  file = {/home/noah/Zotero/storage/9ADU4MVD/Stammler_et_al_2022_Mainzelliste_SecureEpiLinker_(MainSEL) (suppl).pdf;/home/noah/Zotero/storage/JUK93ILL/Stammler_et_al_2022_Mainzelliste_SecureEpiLinker_(MainSEL).pdf;/home/noah/Zotero/storage/PV96FEI3/5900257.html}
 }
 
 @inproceedings{tranGeCoOnlinePersonal2013,

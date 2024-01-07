@@ -136,8 +136,85 @@ Since Bloom filter-based \ac{PPRL} algorithms also rely on hashes, \ac{HMAC}s ar
 Additionally, Bloom filters are weak to \textit{frequency attacks}. % TODO elaborate and explain frequency attacks
 
 One \ac{PPRL} algorithm employing Bloom filters was proposed by Schnell et al. % TODO cite and explain in detail
-%In the context of \ac{PPRL}, one or multiple \ac{IDAT} attributes are used to create a Bloom filter.
-%For example, all $q$-grams, i.e. substrings of length $q$, contained in each attribute are hashed for the creation of the Bloom filter.
-%Bloom filters derived from different records can subsequently be compared.
-%Because the basis of Bloom filters are still hashes, a Bloom filter does not give information about the
+\section{PPRL protocols employing SMPC}
+\cite{lazrigPrivacyPreservingProbabilistic2018} % TODO explain and contrast
+\cite{laudPrivacypreservingRecordLinkage2018} % TODO explain and contrast
+\cite{chenPerfectlySecureEfficient2018} % TODO explain and contrast
+\subsection{Mainzelliste SecureEpiLinker}
+To the author's knowledge, \ac{MainSEL}, developed by Stammler et al.~\cite{stammlerMainzellisteSecureEpiLinkerMainSEL2022}, is the most recent example of an \ac{PPRL} algorithm utilising \ac{SMPC}.
+The tool was developed to integrate with the Mainzelliste software, which is already in use.~\cite{lablansRESTfulInterfacePseudonymization2015} % TODO look up where and how
+Leveraging the \ac{ABY} framework~\cite{demmlerABYFrameworkEfficient2015}, the tool facilitates the conversion between various \ac{SMPC} protocols.
+This section will initially outline \ac{MainSEL}'s record linkage algorithm and subsequently detail its encoding within \ac{SMPC} protocols.
 
+In \ac{MainSEL}'s record linkage computation, two primary functions are employed.
+The initial function calculates the pairwise match scores between records, while the second function processes the match scores to yield pairs of records that are linked. % TODO make sure this is what I meant to write
+
+Each attribute in a record is assigned a weight reflective of its significance for record linkage, derived from observed error rates and frequencies. MainSEL computes a match score by evaluating the similarity score $sim$ for each attribute. For numeric attributes and those intolerant to errors, $sim$ is a binary value $\in {0, 1}$ indicating field equality. For string attributes allowing errors such as typos, similarity is determined using Bloom filters. To obtain the Bloom filters, 15 hashes uniformly distributed within the range $0 \le h < p$ are computed for each bigram.
+
+For optimisation purposes, the 15 hashes are obtained from just two hashing functions $h_1$ and $h_2$,
+by computing:
+\[g_i(x)=h_1(x)+ih_2(x) \mod p; i \in \mathbb{Z}; 0 \le i < 15\]
+, as described by Kirsch and Mitzenmacher. % TODO cite Kirsch and Mitzenmacher, 2006
+In a zero-initialised bit array of size $p$, the \textit{Bloom filter}, the value at the $h^{th}$ index is set to 1 for each hash $h$.
+This is done for the field from both records, $x$ and $y$, to obtain the Bloom filters $Bl(x)$ and $Bl(y)$.
+Bloom filter similarity is given by the Dice score.
+%TODO reference section that mentions Dice scores and cites Dice, 1945
+
+The score of the overall IDAT similarity is the normalised weighted sum of field similarities:
+\[S(x, y)=\frac{\sum\limits_{i\in I}\delta_{i,i}w_{isim_i(x_i, y_i)}}{\sum\limits_{i\in I}\delta_{i,i}w_i}\]
+, ranging from 0 to 1.
+The numerator of this fraction will henceforth be referred to as $s(x, y)$, and the denominator as $w(x, y)$.
+
+Record attributes prone to accidental swaps, such as first names and surnames, are organized into \textit{exchange groups}.
+Within each exchange group, the similarity score is computed for all permutations of pairwise attribute combinations.
+For instance, in the case of first names and surnames, this involves pairing both first names and both surnames with each other, as well as the first name of record 1 with the surname of record 2 and vice versa. The highest achieved similarity score across all exchange group permutations is selected as the overall score of the exchange group. % TODO add section about exchange group weights
+
+Since many similarity score comparisons need to be carried out in the process of record linkage and division is expensive in \ac{SMPC}, Stammler et al.\ defined a comparison of two scores that does not require calculating $(s_1/w_1) > (s_2/w_2)$ and includes a tie-solver in the case that the values are identical:
+\[(s_1, w_1) > (s_2, w_2) :\iff (s_1 w_2>s_2 w_1) \lor (s_1 w_2 = s_2 w_1 \land w_1 > w_2)\]
+
+Executing the complete record linkage protocol with \ac{MainSEL} necessitates a minimum of two instances of Mainzelliste, each containing patient data from their respective institutions, associated \ac{MainSEL} instances, and a linkage service.
+To enable checking for matches in another institution's records without requiring patient consent, the linked records cannot be transmitted to the \ac{MainSEL} instances in clear text.
+If this is ensured, record linkage can be performed proactively.
+Patients' consent is only necessary if the desired number of matches are obtained and the linked records are retrieved.
+The linkage service plays a crucial role in facilitating this functionality.
+
+During the initialization of record linkage, MainSEL establishes a local connection with Mainzelliste.
+Subsequently, configurations for communication with remote MainSEL instances are set, and encrypted connections are established for each.
+Successful connection prompts a test to confirm the correctness of configurations before initiating the record linkage.
+Mainzelliste starts the process by transmitting one or more records to MainSEL (referred to as SEL1), which sends the record count to the remote MainSEL instance (SEL2).
+This information is essential for the offline phase, where the circuit is constructed.
+Following circuit construction, the record linkage computation occurs, as detailed in section 3.
+Upon completion, SEL1 transmits its share of the results (indices of matched records and a boolean mask indicating matches) to the linkage service.
+SEL2 also sends its shares, enabling the linkage service to reconstruct the results.
+The linkage service encrypts the matches' IDs and transmits only the encrypted linkage ID (LID) and the number of matches back to SEL1.
+Patient consent for data sharing triggers SEL1 to send the LID to the linkage service, which decrypts it and forwards the decrypted information to SEL1 and SEL2.
+
+Stammler et al. opted to encode floating-point numbers in fixed-point representation. % TODO why do SMPC protocols use fixed point representation?
+They store the value in $C$, a single bit vector of length $L$.
+Given that field similarities $sim$ fall within the range of 0 to 1, the floating-point value $C(sim)$ with precision $l_s$ can be expressed as $C(sim)=2^{l_s}sim$. The field weights, known beforehand, can be rescaled such that the highest weight under precision $l_w$ equals $2^{l_w}-1$.
+The comparison of similarity scores involves multiplying sums of $n$ $sim$ values and $n$ $w$ values.
+Therefore, if the result should not overflow $C$, $l_s$ and $l_w$ are dependent on $L$ and the number of fields $n$.
+\ac{ABY} allows $L$ to be set as 8, 16, 32, or 64.
+In comparison to double floating-point precision, when $n=8$, Stammler et al. observed deviations of $<1\%$, $<0.1\%$, and a negligible amount for $L=16$, $L=32$, and $L=64$ respectively.
+
+The two calculations to compute  are split into three circuits, \texttt{C1}, \texttt{C2} and \texttt{C3}.
+Stammler et al.\ implemented the circuits in all three sMPC protocols,
+i.e.\ Yao's garbled circuits (Y), additive sharing (A) and boolean sharing (B).
+For boolean components such as equality evaluations ($\beta$), either B or Y can be used.
+Arithmetic components ($\alpha$) may use A, B or Y\@.
+Given a record $x$ and a set of records $y^i$,
+\begin{itemize}
+    \item\texttt{C1} computes $s(x, y^i)$ and $w(x, y^i)$ for all $i$
+    \item\texttt{C2} computes the $\argmax$ and $\max$ from the output of \texttt{C1}
+    \item\texttt{C3} computes the \textit{match bit}, i.e.\ whether the resulting score from \texttt{C2} reaches/exceeds the threshold for matches.
+\end{itemize}
+In \texttt{C1}, two distinct similarity circuits operating in $\beta$ calculate $sim$ scores.
+For fields allowing only exact matches, a straightforward equality check followed by a bit shift, as outlined earlier, is sufficient.
+Fields permitting inexact matches employ the Bloom filter similarity method described previously.
+The locally computed Bloom filters serve as inputs to the circuit.
+To compute the similarity score for exchange groups $s_G$, the function \texttt{MaxQuotient} identifies the maximum $s$ among all permutations within each exchange group.
+This involves pairwise comparisons in mixed protocols ($\alpha$ and $\beta$), iterating through the list and storing the largest value for subsequent pairwise comparisons to retrieve the maximum.
+
+\texttt{maxQuotient} is also utilized in \texttt{C2}, where it helps obtain the $\max$ and $\argmax$ of all $s(x, y^i)$.
+
+Ultimately, \texttt{C3} takes the output of \texttt{C2} and assesses $s>Tw$.
